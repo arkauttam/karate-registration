@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 🌞 Light mode base colors */
+    --background: 0 0% 98%; /* White */
+    --foreground: 240 10% 3.9%; /* Almost Black */
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 210 100% 25%;
+    --primary-glow: 262 100% 70%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 10% 3.9%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 10% 3.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 262 83% 58%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.75rem;
+
+    /* Admin Theme */
+    --admin-primary: 262 90% 65%;
+    --admin-secondary: 240 5% 96%;
+    --admin-accent: 280 100% 85%;
+
+    /* Sidebar Light Mode */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 10% 3.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 10% 3.9%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* 🇮🇳 Indian Flag Colors */
+    --saffron: 30 100% 50%; /* Orange/Saffron */
+    --white: 0 0% 100%; /* White */
+    --green: 120 100% 30%; /* India Green */
+    --navy-blue: 210 100% 25%; /* Chakra Blue */
+  }
+}
+
+@layer utilities {
+  /* Indian Flag Gradient */
+  .bg-indian-flag {
+    background-image: linear-gradient(
+      90deg,
+      hsl(var(--saffron)) 0%,
+      hsl(var(--white)) 50%,
+      hsl(var(--green)) 100%
+    );
+    
+  }
+  .text-indian-flag {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--saffron)) 0%,
+      hsl(var(--white)) 50%,
+      hsl(var(--green)) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800; /* deep bold */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
