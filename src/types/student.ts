@@ -14,7 +14,7 @@ export interface Student {
   examFees: number;
   foodFees: number;
   rice?: number;
-  garmentFees: number;
+  gargentFees: number;
   createdAt: Date;
 }
 
@@ -24,7 +24,7 @@ export interface StudentFormData {
   examFees: string;
   foodFees: string;
   rice?: string;
-  garmentFees: string;
+  gargentFees: string;
 }
 
 export interface StudentSummary {
@@ -32,7 +32,7 @@ export interface StudentSummary {
   totalExamFees: number;
   totalFoodFees: number;
   totalRice: number;
-  totalGarmentFees: number;
+  totalGargentFees: number;
   grandTotal: number;
 }
 

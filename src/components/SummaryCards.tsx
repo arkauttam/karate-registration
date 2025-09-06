@@ -65,7 +65,7 @@ export const SummaryCards = ({ summary }: SummaryCardsProps) => {
     },
     {
       title: "Gargent Fees",
-      value: formatCurrency(summary.totalGarmentFees),
+      value: formatCurrency(summary.totalGargentFees),
       icon: Shirt,
       gradient: "from-pink-500/10 to-pink-600/5",
       iconBg: "bg-pink-500/10 text-pink-600",

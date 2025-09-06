@@ -1,36 +1,63 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FloatingNavbar } from "@/components/FloatingNavbar";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { Student, BELT_LEVELS } from "@/types/student";
-import { useLocation } from "react-router-dom";
 
 const Analytics = () => {
-  const location = useLocation();
-  const students = (location.state?.students as Student[]) || [];
+  const [students, setStudents] = useState<Student[]>([]);
+  useEffect(() => {
+    const savedStudents = localStorage.getItem("students");
+    if (savedStudents) {
+      setStudents(JSON.parse(savedStudents));
+    }
+  }, []);
 
   const analyticsData = useMemo(() => {
-    const beltStats = BELT_LEVELS.map(belt => {
-      const beltStudents = students.filter(student => student.beltLevel.id === belt.id);
-      const totalFees = beltStudents.reduce((sum, student) => 
-        sum + student.examFees + student.foodFees + (student.rice || 0) + student.garmentFees, 0);
-      
+    const beltStats = BELT_LEVELS.map((belt) => {
+      const beltStudents = students.filter(
+        (student) => student.beltLevel.id === belt.id
+      );
+
+      const examFees = beltStudents.reduce(
+        (sum, student) => sum + student.examFees,
+        0
+      );
+      const foodFees = beltStudents.reduce(
+        (sum, student) => sum + student.foodFees,
+        0
+      );
+      const rice = beltStudents.reduce(
+        (sum, student) => sum + (student.rice || 0),
+        0
+      );
+      const gargentFees = beltStudents.reduce(
+        (sum, student) => sum + student.gargentFees,
+        0
+      );
+
+      const totalFees = examFees + foodFees + rice + gargentFees;
+      const othersFees = totalFees - examFees;
+
       return {
         name: `${belt.name} ${belt.kyu}`,
         students: beltStudents.length,
         totalFees,
-        examFees: beltStudents.reduce((sum, student) => sum + student.examFees, 0),
-        foodFees: beltStudents.reduce((sum, student) => sum + student.foodFees, 0),
-        rice: beltStudents.reduce((sum, student) => sum + (student.rice || 0), 0),
-        garmentFees: beltStudents.reduce((sum, student) => sum + student.garmentFees, 0),
-        color: belt.color
+        examFees,
+        othersFees,
+        foodFees,
+        rice,
+        gargentFees,
+        color: belt.color,
       };
     });
 
-    return beltStats.filter(stat => stat.students > 0);
+    // Only return belts that actually have students
+    return beltStats.filter((stat) => stat.students > 0);
   }, [students]);
+
 
   const chartConfig = {
     students: {
@@ -49,8 +76,8 @@ const Analytics = () => {
       label: "Food Fees",
       color: "hsl(var(--chart-4))"
     },
-    garmentFees: {
-      label: "Garment Fees",
+    gargentFees: {
+      label: "Gargent Fees",
       color: "hsl(var(--chart-5))"
     }
   };
@@ -58,7 +85,7 @@ const Analytics = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       <FloatingNavbar />
-      <div className="container mx-auto px-4 py-8 max-w-7xl pt-20">
+      <div className="container mx-auto px-4 py-8 max-w-7xl pt-20 my-16">
         <div className="mb-12 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-primary-glow to-admin-primary bg-clip-text text-transparent mb-4">
             Analytics Dashboard
@@ -72,8 +99,8 @@ const Analytics = () => {
           {/* Student Distribution by Belt */}
           <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
-              <CardTitle>Student Distribution by Belt Level</CardTitle>
-              <CardDescription>Number of students per belt level</CardDescription>
+              <CardTitle className="text-gray-600">Student Distribution by Belt Level</CardTitle>
+              <CardDescription className="text-gray-500">Number of students per belt level</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="h-[400px]">
@@ -83,19 +110,42 @@ const Analytics = () => {
                     <XAxis dataKey="name" />
                     <YAxis />
                     <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="students" fill="var(--color-students)" />
+                    <Bar dataKey="students">
+                      {analyticsData.map((entry, index) => {
+                        // Map Tailwind colors to hex for recharts
+                        const beltColorMap: Record<string, string> = {
+                          "bg-white text-black border-gray-300": "#eeeeee",
+                          "bg-blue-500 text-white": "#3b82f6",
+                          "bg-blue-600 text-white": "#2563eb",
+                          "bg-yellow-400 text-black": "#facc15",
+                          "bg-yellow-500 text-black": "#eab308",
+                          "bg-green-500 text-white": "#22c55e",
+                          "bg-green-600 text-white": "#16a34a",
+                          "bg-amber-700 text-white": "#b45309",
+                          "bg-amber-800 text-white": "#92400e",
+                        };
+
+                        return (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={beltColorMap[entry.color] || "#8884d8"} // fallback
+                          />
+                        );
+                      })}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </ChartContainer>
             </CardContent>
           </Card>
 
+
           {/* Fee Distribution */}
           <div className="grid lg:grid-cols-2 gap-8">
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader>
-                <CardTitle>Total Fees by Belt</CardTitle>
-                <CardDescription>Revenue distribution across belt levels</CardDescription>
+                <CardTitle className="text-gray-700">Total Fees by Belt</CardTitle>
+                <CardDescription className="text-gray-600">Revenue distribution across belt levels</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig} className="h-[300px]">
@@ -106,14 +156,33 @@ const Analytics = () => {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) =>
+                          `${name}: ${(percent * 100).toFixed(0)}%`
+                        }
                         outerRadius={80}
-                        fill="#8884d8"
                         dataKey="totalFees"
                       >
-                        {analyticsData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={`hsl(var(--chart-${(index % 5) + 1}))`} />
-                        ))}
+                        {analyticsData.map((entry, index) => {
+                          // Same Tailwind → HEX mapping
+                          const beltColorMap: Record<string, string> = {
+                            "bg-white text-black border-gray-300": "#eeeeee",
+                            "bg-blue-500 text-white": "#3b82f6",
+                            "bg-blue-600 text-white": "#2563eb",
+                            "bg-yellow-400 text-black": "#facc15",
+                            "bg-yellow-500 text-black": "#eab308",
+                            "bg-green-500 text-white": "#22c55e",
+                            "bg-green-600 text-white": "#16a34a",
+                            "bg-amber-700 text-white": "#b45309",
+                            "bg-amber-800 text-white": "#92400e",
+                          };
+
+                          return (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={beltColorMap[entry.color] || "#8884d8"} // fallback
+                            />
+                          );
+                        })}
                       </Pie>
                       <ChartTooltip content={<ChartTooltipContent />} />
                     </PieChart>
@@ -122,10 +191,11 @@ const Analytics = () => {
               </CardContent>
             </Card>
 
+
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader>
-                <CardTitle>Fee Breakdown by Type</CardTitle>
-                <CardDescription>Detailed fee analysis per belt level</CardDescription>
+                <CardTitle className="text-gray-700">Fee Breakdown by Type</CardTitle>
+                <CardDescription className="text-gray-600">Detailed fee analysis per belt level</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig} className="h-[300px]">
@@ -137,7 +207,7 @@ const Analytics = () => {
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="examFees" stackId="a" fill="var(--color-examFees)" />
                       <Bar dataKey="foodFees" stackId="a" fill="var(--color-foodFees)" />
-                      <Bar dataKey="garmentFees" stackId="a" fill="var(--color-garmentFees)" />
+                      <Bar dataKey="gargentFees" stackId="a" fill="var(--color-gargentFees)" />
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
@@ -147,46 +217,53 @@ const Analytics = () => {
 
           {/* Summary Stats */}
           <div className="grid md:grid-cols-4 gap-6">
+            {/* Total Students */}
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-700">Total Students</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{students.length}</div>
+                <div className="text-2xl font-bold text-primary">{students.length}</div>
               </CardContent>
             </Card>
-            
+
+            {/* Total Revenue */}
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-700">Total Revenue</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-bold text-primary">
                   ₹{analyticsData.reduce((sum, belt) => sum + belt.totalFees, 0)}
                 </div>
               </CardContent>
             </Card>
-            
+
+            {/* Others Fee */}
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Active Belts</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-700">Others Fee</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{analyticsData.length}</div>
+                <div className="text-2xl font-bold text-primary">
+                  ₹{analyticsData.reduce((sum, belt) => sum + belt.othersFees, 0)}
+                </div>
               </CardContent>
             </Card>
-            
+
+            {/* Total Exam Fee */}
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Avg Fee per Student</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-700">Total Exam Fee</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  ₹{students.length > 0 ? Math.round(analyticsData.reduce((sum, belt) => sum + belt.totalFees, 0) / students.length) : 0}
+                <div className="text-2xl font-bold text-primary">
+                  ₹{analyticsData.reduce((sum, belt) => sum + belt.examFees, 0)}
                 </div>
               </CardContent>
             </Card>
           </div>
+
         </div>
       </div>
       <Footer />

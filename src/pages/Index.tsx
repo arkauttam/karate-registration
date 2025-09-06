@@ -1,21 +1,31 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { StudentForm } from "@/components/StudentForm";
 import { StudentsTable } from "@/components/StudentsTable";
 import { SummaryCards } from "@/components/SummaryCards";
 import { FloatingNavbar } from "@/components/FloatingNavbar";
 import { Footer } from "@/components/Footer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Student, StudentFormData, StudentSummary, BELT_LEVELS } from "@/types/student";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { Award, BarChart3, Medal, Users } from "lucide-react";
+import { Award } from "lucide-react";
 
 const Index = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedBeltFilter, setSelectedBeltFilter] = useState<string>("all");
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedStudents = localStorage.getItem("students");
+    if (savedStudents) {
+      setStudents(JSON.parse(savedStudents));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("students", JSON.stringify(students));
+  }, [students]);
 
   const handleAddStudent = (formData: StudentFormData) => {
     const selectedBelt = BELT_LEVELS.find(belt => belt.id === formData.beltLevel);
@@ -29,7 +39,7 @@ const Index = () => {
       examFees: parseFloat(formData.examFees) || 0,
       foodFees: parseFloat(formData.foodFees) || 0,
       rice: formData.rice ? parseFloat(formData.rice) : undefined,
-      garmentFees: parseFloat(formData.garmentFees) || 0,
+      gargentFees: parseFloat(formData.gargentFees) || 0,
       createdAt: new Date(),
     };
 
@@ -53,15 +63,15 @@ const Index = () => {
         totalExamFees: acc.totalExamFees + student.examFees,
         totalFoodFees: acc.totalFoodFees + student.foodFees,
         totalRice: acc.totalRice + (student.rice || 0),
-        totalGarmentFees: acc.totalGarmentFees + student.garmentFees,
-        grandTotal: acc.grandTotal + student.examFees + student.foodFees + (student.rice || 0) + student.garmentFees,
+        totalGargentFees: acc.totalGargentFees + student.gargentFees,
+        grandTotal: acc.grandTotal + student.examFees + student.foodFees + (student.rice || 0) + student.gargentFees,
       }),
       {
         totalStudents: 0,
         totalExamFees: 0,
         totalFoodFees: 0,
         totalRice: 0,
-        totalGarmentFees: 0,
+        totalGargentFees: 0,
         grandTotal: 0,
       }
     );
@@ -84,8 +94,7 @@ const Index = () => {
           {/* Belt Filter for Summary */}
           <div className="flex items-center justify-start gap-4 mb-6">
             <Select value={selectedBeltFilter} onValueChange={setSelectedBeltFilter}>
-              <SelectTrigger
-                className="w-64 h-12 border-2 rounded-lg">
+              <SelectTrigger className="w-64 h-12 border-2 rounded-lg">
                 <SelectValue placeholder="Select belt level" />
               </SelectTrigger>
 
@@ -94,9 +103,7 @@ const Index = () => {
                 {BELT_LEVELS.map((belt) => (
                   <SelectItem key={belt.id} value={belt.id}>
                     <div className="flex items-center gap-3">
-                      <div
-                        className={`w-4 h-4 rounded-full ${belt.color} border-2`}
-                      ></div>
+                      <div className={`w-4 h-4 rounded-full ${belt.color} border-2`}></div>
                       <span className="font-medium text-gray-700">
                         {belt.name} {belt.kyu}
                       </span>

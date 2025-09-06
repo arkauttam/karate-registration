@@ -18,7 +18,7 @@ export const StudentForm = ({ onSubmit }: StudentFormProps) => {
     examFees: "",
     foodFees: "",
     rice: "",
-    garmentFees: "",
+    gargentFees: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,7 +32,7 @@ export const StudentForm = ({ onSubmit }: StudentFormProps) => {
       examFees: "",
       foodFees: "",
       rice: "",
-      garmentFees: "",
+      gargentFees: "",
     });
   };
 
@@ -64,7 +64,7 @@ export const StudentForm = ({ onSubmit }: StudentFormProps) => {
       <CardContent className="p-8">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <Label htmlFor="studentName" className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <Label htmlFor="studentName" className="text-sm font-semibold text-foreground flex items-center gap-2 text-gray-700">
               Student Name *
             </Label>
             <Input
@@ -78,7 +78,7 @@ export const StudentForm = ({ onSubmit }: StudentFormProps) => {
           </div>
           
           <div>
-            <Label htmlFor="beltLevel" className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <Label htmlFor="beltLevel" className="text-sm font-semibold text-foreground flex items-center gap-2 text-gray-700">
               <Award className="w-4 h-4 text-primary" />
               Belt Level *
             </Label>
@@ -103,7 +103,7 @@ export const StudentForm = ({ onSubmit }: StudentFormProps) => {
           </div>
           
           <div>
-            <Label htmlFor="examFees" className="text-sm font-semibold text-foreground">
+            <Label htmlFor="examFees" className="text-sm font-semibold text-foreground text-gray-700">
               Exam Fees (Auto-filled)
             </Label>
             <Input
@@ -112,7 +112,7 @@ export const StudentForm = ({ onSubmit }: StudentFormProps) => {
               value={formData.examFees}
               onChange={(e) => handleChange("examFees", e.target.value)}
               placeholder="0.00"
-              className="mt-2 h-12 border-2 focus:border-primary transition-all duration-300 bg-muted/30"
+              className="mt-2 h-12 border-2 focus:border-primary transition-all duration-300 bg-muted/30 cursor-not-allowed"
               min="0"
               step="0.01"
               readOnly
@@ -120,7 +120,7 @@ export const StudentForm = ({ onSubmit }: StudentFormProps) => {
           </div>
 
           <div>
-            <Label htmlFor="foodFees" className="text-sm font-semibold text-foreground">
+            <Label htmlFor="foodFees" className="text-sm font-semibold text-foreground text-gray-700">
               Food Fees
             </Label>
             <Input
@@ -136,8 +136,8 @@ export const StudentForm = ({ onSubmit }: StudentFormProps) => {
           </div>
 
           <div>
-            <Label htmlFor="rice" className="text-sm font-medium text-muted-foreground">
-              Rice (Optional)
+            <Label htmlFor="rice" className="text-sm font-medium text-muted-foreground text-gray-700">
+              Rice
             </Label>
             <Input
               id="rice"
@@ -152,14 +152,14 @@ export const StudentForm = ({ onSubmit }: StudentFormProps) => {
           </div>
 
           <div>
-            <Label htmlFor="garmentFees" className="text-sm font-semibold text-foreground">
-              Garment Fees
+            <Label htmlFor="gargentFees" className="text-sm font-semibold text-foreground text-gray-700">
+              Gargent Fees
             </Label>
             <Input
-              id="garmentFees"
+              id="gargentFees"
               type="number"
-              value={formData.garmentFees}
-              onChange={(e) => handleChange("garmentFees", e.target.value)}
+              value={formData.gargentFees}
+              onChange={(e) => handleChange("gargentFees", e.target.value)}
               placeholder="0.00"
               className="mt-2 h-12 border-2 focus:border-primary transition-all duration-300"
               min="0"
